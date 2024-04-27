@@ -37,7 +37,27 @@ namespace library_api.Controllers
 				return BadRequest("Author id does not match with any record.");
 			}
 
+			bool authorExists = await this._context.Author.AnyAsync(author => author.Id == id);
+			if (!authorExists)
+			{
+				return NotFound();
+			}
+
 			this._context.Update(author);
+			await this._context.SaveChangesAsync();
+			return Ok();
+		}
+
+		[HttpDelete("{id:int}")]
+		public async Task<ActionResult> Delete(int id)
+		{
+			bool authorExists = await this._context.Author.AnyAsync(author => author.Id == id);
+			if (!authorExists)
+			{
+				return NotFound();
+			}
+
+			this._context.Remove(new Author() { Id = id });
 			await this._context.SaveChangesAsync();
 			return Ok();
 		}

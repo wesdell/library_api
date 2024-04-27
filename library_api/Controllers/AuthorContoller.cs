@@ -28,5 +28,18 @@ namespace library_api.Controllers
 			await this._context.SaveChangesAsync();
 			return Ok();
 		}
+
+		[HttpPut("{id:int}")]
+		public async Task<ActionResult> Put(Author author, int id)
+		{
+			if (author.Id != id)
+			{
+				return BadRequest("Author id does not match with any record.");
+			}
+
+			this._context.Update(author);
+			await this._context.SaveChangesAsync();
+			return Ok();
+		}
 	}
 }

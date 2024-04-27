@@ -1,10 +1,12 @@
-﻿namespace library_api.Interfaces
+﻿using library_api.Entities;
+
+namespace library_api.Interfaces
 {
 	public interface IBook
 	{
 		int Id { get; set; }
 		int AuthorId { get; set; }
 		string Title { get; set; }
-		IAuthor Author { get; set; }
+		Author Author { get; set; }
 	}
 }

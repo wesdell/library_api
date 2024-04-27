@@ -6,5 +6,6 @@ namespace library_api.Entities
 	{
 		public int Id { get; set; }
 		public string Name { get; set; }
+		public List<IBook> Books { get; set; }
 	}
 }

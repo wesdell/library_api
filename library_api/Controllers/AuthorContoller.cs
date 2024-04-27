@@ -1,5 +1,6 @@
 ﻿using library_api.Entities;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace library_api.Controllers
 {
@@ -7,11 +8,25 @@ namespace library_api.Controllers
 	[Route("api/authors")]
 	public class AuthorContoller : ControllerBase
 	{
-		[HttpGet]
-		public ActionResult<List<Author>> Get()
+		private readonly ApplicationDBContext _context;
+
+		public AuthorContoller(ApplicationDBContext context)
 		{
-			return Ok(new List<Author>() { new Author() { Id = 0, Name = "Jane Doe" } });
+			this._context = context;
 		}
 
+		[HttpGet]
+		public async Task<ActionResult<List<Author>>> Get()
+		{
+			return await this._context.Author.ToListAsync();
+		}
+
+		[HttpPost]
+		public async Task<ActionResult> Post(Author author)
+		{
+			this._context.Add(author);
+			await this._context.SaveChangesAsync();
+			return Ok();
+		}
 	}
 }

@@ -18,7 +18,7 @@ namespace library_api.Controllers
 		[HttpGet]
 		public async Task<ActionResult<List<Author>>> Get()
 		{
-			return await this._context.Author.ToListAsync();
+			return await this._context.Author.Include(author => author.Books).ToListAsync();
 		}
 
 		[HttpPost]

@@ -32,6 +32,17 @@ namespace library_api.Controllers
 			return author;
 		}
 
+		[HttpGet("{name:string}")]
+		public async Task<ActionResult<Author>> Get(string name)
+		{
+			Author author = await this._context.Author.FirstOrDefaultAsync(au => au.Name.Contains(name));
+			if (author == null)
+			{
+				return NotFound();
+			}
+			return author;
+		}
+
 		[HttpPost]
 		public async Task<ActionResult> Post(Author author)
 		{

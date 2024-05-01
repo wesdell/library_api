@@ -6,7 +6,7 @@ namespace library_api.Interfaces
 	{
 		int Id { get; set; }
 		int AuthorId { get; set; }
-		string Title { get; set; }
-		Author Author { get; set; }
+		string? Title { get; set; }
+		Author? Author { get; set; }
 	}
 }

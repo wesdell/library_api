@@ -32,7 +32,7 @@ namespace library_api.Controllers
 			return author;
 		}
 
-		[HttpGet("{name:string}")]
+		[HttpGet("{name}")]
 		public async Task<ActionResult<Author>> Get(string name)
 		{
 			Author author = await this._context.Author.FirstOrDefaultAsync(au => au.Name.Contains(name));

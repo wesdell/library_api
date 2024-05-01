@@ -21,6 +21,17 @@ namespace library_api.Controllers
 			return await this._context.Author.Include(author => author.Books).ToListAsync();
 		}
 
+		[HttpGet("{id:int}")]
+		public async Task<ActionResult<Author>> Get(int id)
+		{
+			Author author = await this._context.Author.FirstOrDefaultAsync(au => au.Id == id);
+			if (author == null)
+			{
+				return NotFound();
+			}
+			return author;
+		}
+
 		[HttpPost]
 		public async Task<ActionResult> Post(Author author)
 		{

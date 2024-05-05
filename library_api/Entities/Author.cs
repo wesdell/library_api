@@ -11,6 +11,5 @@ namespace library_api.Entities
 		[StringLength(maximumLength: 150)]
 		[FirstLetterCapitalized]
 		public string Name { get; set; }
-		public List<Book> Books { get; set; }
 	}
 }

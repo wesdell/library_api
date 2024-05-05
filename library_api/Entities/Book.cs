@@ -1,12 +1,12 @@
 ﻿using library_api.Interfaces;
+using library_api.Validations;
 
 namespace library_api.Entities
 {
 	public class Book : IBook
 	{
 		public int Id { get; set; }
-		public int AuthorId { get; set; }
-		public string? Title { get; set; }
-		public Author? Author { get; set; }
+		[FirstLetterCapitalized]
+		public string Title { get; set; }
 	}
 }

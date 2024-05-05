@@ -1,4 +1,6 @@
-﻿using library_api.Entities;
+﻿using AutoMapper;
+using library_api.DTOs;
+using library_api.Entities;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -9,16 +11,18 @@ namespace library_api.Controllers
 	public class AuthorContoller : ControllerBase
 	{
 		private readonly ApplicationDBContext _context;
+		private readonly IMapper _mapper;
 
-		public AuthorContoller(ApplicationDBContext context)
+		public AuthorContoller(ApplicationDBContext context, IMapper mapper)
 		{
 			this._context = context;
+			this._mapper = mapper;
 		}
 
 		[HttpGet]
 		public async Task<ActionResult<List<Author>>> Get()
 		{
-			return await this._context.Author.Include(author => author.Books).ToListAsync();
+			return await this._context.Author.ToListAsync();
 		}
 
 		[HttpGet("{id:int}")]
@@ -44,8 +48,15 @@ namespace library_api.Controllers
 		}
 
 		[HttpPost]
-		public async Task<ActionResult> Post(Author author)
+		public async Task<ActionResult> Post([FromBody] CreateAuthorDTO createAuthorDTO)
 		{
+			bool authorAlreadyExists = await this._context.Author.AnyAsync(author => author.Name == createAuthorDTO.Name);
+			if (authorAlreadyExists)
+			{
+				return BadRequest($"{createAuthorDTO.Name} already exists.");
+			}
+
+			Author author = this._mapper.Map<Author>(createAuthorDTO);
 			this._context.Add(author);
 			await this._context.SaveChangesAsync();
 			return Ok();

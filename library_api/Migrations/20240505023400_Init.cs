@@ -29,33 +29,22 @@ namespace library_api.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Title = table.Column<string>(type: "nvarchar(250)", maxLength: 250, nullable: true),
-                    AuthorId = table.Column<int>(type: "int", nullable: true)
+                    Title = table.Column<string>(type: "nvarchar(250)", maxLength: 250, nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Book", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Book_Author_AuthorId",
-                        column: x => x.AuthorId,
-                        principalTable: "Author",
-                        principalColumn: "Id");
                 });
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Book_AuthorId",
-                table: "Book",
-                column: "AuthorId");
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "Book");
+                name: "Author");
 
             migrationBuilder.DropTable(
-                name: "Author");
+                name: "Book");
         }
     }
 }

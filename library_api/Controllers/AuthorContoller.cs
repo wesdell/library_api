@@ -20,31 +20,28 @@ namespace library_api.Controllers
 		}
 
 		[HttpGet]
-		public async Task<ActionResult<List<Author>>> Get()
+		public async Task<ActionResult<List<AuthorDTO>>> Get()
 		{
-			return await this._context.Author.ToListAsync();
+			List<Author> authors = await this._context.Author.ToListAsync();
+			return this._mapper.Map<List<AuthorDTO>>(authors);
 		}
 
 		[HttpGet("{id:int}")]
-		public async Task<ActionResult<Author>> Get(int id)
+		public async Task<ActionResult<AuthorDTO>> Get(int id)
 		{
 			Author author = await this._context.Author.FirstOrDefaultAsync(au => au.Id == id);
 			if (author == null)
 			{
 				return NotFound();
 			}
-			return author;
+			return this._mapper.Map<AuthorDTO>(author);
 		}
 
 		[HttpGet("{name}")]
-		public async Task<ActionResult<Author>> Get(string name)
+		public async Task<ActionResult<List<AuthorDTO>>> Get([FromRoute] string name)
 		{
-			Author author = await this._context.Author.FirstOrDefaultAsync(au => au.Name.Contains(name));
-			if (author == null)
-			{
-				return NotFound();
-			}
-			return author;
+			List<Author> authors = await this._context.Author.Where(au => au.Name.Contains(name)).ToListAsync();
+			return this._mapper.Map<List<AuthorDTO>>(authors);
 		}
 
 		[HttpPost]

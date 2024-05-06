@@ -1,6 +1,8 @@
-﻿namespace library_api.Entities
+﻿using library_api.Interfaces;
+
+namespace library_api.Entities
 {
-	public class AuthorBook
+	public class AuthorBook : IAuthorBook
 	{
 		public int AuthorId { get; set; }
 		public int BookId { get; set; }

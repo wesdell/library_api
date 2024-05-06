@@ -11,5 +11,6 @@ namespace library_api.Entities
 		[StringLength(maximumLength: 150)]
 		[FirstLetterCapitalized]
 		public string Name { get; set; }
+		public List<AuthorBook> AuthorBooks { get; set; }
 	}
 }

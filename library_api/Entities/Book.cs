@@ -12,5 +12,6 @@ namespace library_api.Entities
 		[FirstLetterCapitalized]
 		public string Title { get; set; }
 		public List<Comment> Comments { get; set; }
+		public List<AuthorBook> AuthorBooks { get; set; }
 	}
 }

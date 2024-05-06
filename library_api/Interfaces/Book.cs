@@ -7,5 +7,6 @@ namespace library_api.Interfaces
 		int Id { get; set; }
 		string Title { get; set; }
 		List<Comment> Comments { get; set; }
+		List<AuthorBook> AuthorBooks { get; set; }
 	}
 }

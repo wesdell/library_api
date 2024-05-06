@@ -10,6 +10,8 @@ namespace library_api.Utils
 		{
 			CreateMap<CreateAuthorDTO, Author>();
 			CreateMap<Author, AuthorDTO>();
+			CreateMap<CreateBookDTO, Book>();
+			CreateMap<Book, BookDTO>();
 		}
 	}
 }

@@ -9,6 +9,7 @@ namespace library_api.Utils
 		public AutoMapperProfiles()
 		{
 			CreateMap<CreateAuthorDTO, Author>();
+			CreateMap<Author, AuthorDTO>();
 		}
 	}
 }

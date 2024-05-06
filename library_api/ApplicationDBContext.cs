@@ -9,5 +9,6 @@ namespace library_api
 
 		public DbSet<Author> Author { get; set; }
 		public DbSet<Book> Book { get; set; }
+		public DbSet<Comment> Comment { get; set; }
 	}
 }

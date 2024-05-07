@@ -8,5 +8,6 @@ namespace library_api.DTOs
 		[StringLength(maximumLength: 250)]
 		[FirstLetterCapitalized]
 		public string Title { get; set; }
+		public List<int> AuthorsIds { get; set; }
 	}
 }

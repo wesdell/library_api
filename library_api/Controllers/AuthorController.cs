@@ -29,7 +29,7 @@ namespace library_api.Controllers
 		[HttpGet("{id:int}")]
 		public async Task<ActionResult<AuthorDTO>> Get(int id)
 		{
-			Author author = await this._context.Author.FirstOrDefaultAsync(au => au.Id == id);
+			Author author = await this._context.Author.Include(author => author.AuthorBooks).ThenInclude(authorbook => authorbook.Book).FirstOrDefaultAsync(au => au.Id == id);
 			if (author == null)
 			{
 				return NotFound();

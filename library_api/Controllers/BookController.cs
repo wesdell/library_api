@@ -27,7 +27,8 @@ namespace library_api.Controllers
 			{
 				return NotFound();
 			}
-			Book book = await this._context.Book.FirstOrDefaultAsync(book => book.Id == id);
+			Book book = await this._context.Book.Include(book => book.AuthorBooks).ThenInclude(authorbook => authorbook.Author).FirstOrDefaultAsync(book => book.Id == id);
+			book.AuthorBooks = book.AuthorBooks.OrderBy(book => book.Order).ToList();
 			return this._mapper.Map<BookDTO>(book);
 		}
 

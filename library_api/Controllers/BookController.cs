@@ -20,7 +20,7 @@ namespace library_api.Controllers
 		}
 
 		[HttpGet("{id:int}")]
-		public async Task<ActionResult<BookDTO>> GetById(int id)
+		public async Task<ActionResult<BookDTOAuthors>> GetById(int id)
 		{
 			bool bookExists = await this._context.Book.AnyAsync(book => book.Id == id);
 			if (!bookExists)
@@ -29,7 +29,7 @@ namespace library_api.Controllers
 			}
 			Book book = await this._context.Book.Include(book => book.AuthorBooks).ThenInclude(authorbook => authorbook.Author).FirstOrDefaultAsync(book => book.Id == id);
 			book.AuthorBooks = book.AuthorBooks.OrderBy(book => book.Order).ToList();
-			return this._mapper.Map<BookDTO>(book);
+			return this._mapper.Map<BookDTOAuthors>(book);
 		}
 
 		[HttpPost]

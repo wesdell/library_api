@@ -27,14 +27,14 @@ namespace library_api.Controllers
 		}
 
 		[HttpGet("{id:int}")]
-		public async Task<ActionResult<AuthorDTO>> Get(int id)
+		public async Task<ActionResult<AuthorDTOBooks>> Get(int id)
 		{
 			Author author = await this._context.Author.Include(author => author.AuthorBooks).ThenInclude(authorbook => authorbook.Book).FirstOrDefaultAsync(au => au.Id == id);
 			if (author == null)
 			{
 				return NotFound();
 			}
-			return this._mapper.Map<AuthorDTO>(author);
+			return this._mapper.Map<AuthorDTOBooks>(author);
 		}
 
 		[HttpGet("{name}")]

@@ -9,9 +9,11 @@ namespace library_api.Utils
 		public AutoMapperProfiles()
 		{
 			CreateMap<CreateAuthorDTO, Author>();
-			CreateMap<Author, AuthorDTO>().ForMember(author => author.Books, options => options.MapFrom(this.MapAuthorDTOBook));
+			CreateMap<Author, AuthorDTO>();
+			CreateMap<Author, AuthorDTOBooks>().ForMember(author => author.Books, options => options.MapFrom(this.MapAuthorDTOBook));
 			CreateMap<CreateBookDTO, Book>().ForMember(book => book.AuthorBooks, options => options.MapFrom(this.MapAuthorBook));
-			CreateMap<Book, BookDTO>().ForMember(book => book.Authors, options => options.MapFrom(this.MapBookDTOAuthor));
+			CreateMap<Book, BookDTO>();
+			CreateMap<Book, BookDTOAuthors>().ForMember(book => book.Authors, options => options.MapFrom(this.MapBookDTOAuthor));
 			CreateMap<CreateCommentDTO, Comment>();
 			CreateMap<Comment, CommentDTO>();
 		}
@@ -30,7 +32,7 @@ namespace library_api.Utils
 			return authorBooks;
 		}
 
-		private List<AuthorDTO> MapBookDTOAuthor(Book book, BookDTO bookDTO)
+		private List<AuthorDTO> MapBookDTOAuthor(Book book, BookDTOAuthors bookDTOAuthors)
 		{
 			List<AuthorDTO> authorDTOs = new List<AuthorDTO>();
 			if (book.AuthorBooks == null)
@@ -44,7 +46,7 @@ namespace library_api.Utils
 			return authorDTOs;
 		}
 
-		private List<BookDTO> MapAuthorDTOBook(Author author, AuthorDTO authorDTO)
+		private List<BookDTO> MapAuthorDTOBook(Author author, AuthorDTOBooks authorDTOBooks)
 		{
 			List<BookDTO> bookDTOs = new List<BookDTO>();
 			if (author.AuthorBooks == null)

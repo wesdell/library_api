@@ -9,7 +9,7 @@ namespace library_api.Utils
 		public AutoMapperProfiles()
 		{
 			CreateMap<CreateAuthorDTO, Author>();
-			CreateMap<Author, AuthorDTO>();
+			CreateMap<Author, AuthorDTO>().ForMember(author => author.Books, options => options.MapFrom(this.MapAuthorDTOBook));
 			CreateMap<CreateBookDTO, Book>().ForMember(book => book.AuthorBooks, options => options.MapFrom(this.MapAuthorBook));
 			CreateMap<Book, BookDTO>().ForMember(book => book.Authors, options => options.MapFrom(this.MapBookDTOAuthor));
 			CreateMap<CreateCommentDTO, Comment>();
@@ -42,6 +42,20 @@ namespace library_api.Utils
 				authorDTOs.Add(new AuthorDTO() { Id = authorbook.AuthorId, Name = authorbook.Author.Name });
 			}
 			return authorDTOs;
+		}
+
+		private List<BookDTO> MapAuthorDTOBook(Author author, AuthorDTO authorDTO)
+		{
+			List<BookDTO> bookDTOs = new List<BookDTO>();
+			if (author.AuthorBooks == null)
+			{
+				return bookDTOs;
+			}
+			foreach (var authorbook in author.AuthorBooks)
+			{
+				bookDTOs.Add(new BookDTO() { Id = authorbook.BookId, Title = authorbook.Book.Title });
+			}
+			return bookDTOs;
 		}
 	}
 }

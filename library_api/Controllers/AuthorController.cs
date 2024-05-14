@@ -26,7 +26,7 @@ namespace library_api.Controllers
 			return this._mapper.Map<List<AuthorDTO>>(authors);
 		}
 
-		[HttpGet("{id:int}")]
+		[HttpGet("{id:int}", Name = "GetAuthorById")]
 		public async Task<ActionResult<AuthorDTOBooks>> Get(int id)
 		{
 			Author author = await this._context.Author.Include(author => author.AuthorBooks).ThenInclude(authorbook => authorbook.Book).FirstOrDefaultAsync(au => au.Id == id);
@@ -56,7 +56,10 @@ namespace library_api.Controllers
 			Author author = this._mapper.Map<Author>(createAuthorDTO);
 			this._context.Add(author);
 			await this._context.SaveChangesAsync();
-			return Ok();
+
+			AuthorDTO authorDTO = this._mapper.Map<AuthorDTO>(author);
+
+			return CreatedAtRoute("GetAuthorById", new { id = author.Id }, authorDTO);
 		}
 
 		[HttpPut("{id:int}")]

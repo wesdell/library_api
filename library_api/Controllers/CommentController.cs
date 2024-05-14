@@ -19,6 +19,18 @@ namespace library_api.Controllers
 			this._mapper = mapper;
 		}
 
+		[HttpGet("{id:int}", Name = "GetCommentById")]
+		public async Task<ActionResult<CommentDTO>> GetById(int id)
+		{
+			bool commentExists = await this._context.Comment.AnyAsync(comment => comment.Id == id);
+			if (!commentExists)
+			{
+				return NotFound();
+			}
+			Comment comment = await this._context.Comment.FirstOrDefaultAsync(comment => comment.Id == id);
+			return this._mapper.Map<CommentDTO>(comment);
+		}
+
 		[HttpGet]
 		public async Task<ActionResult<List<CommentDTO>>> Get(int bookId)
 		{
@@ -43,7 +55,10 @@ namespace library_api.Controllers
 			comment.BookId = bookId;
 			this._context.Add(comment);
 			await this._context.SaveChangesAsync();
-			return Ok();
+
+			CommentDTO commentDTO = this._mapper.Map<CommentDTO>(comment);
+
+			return CreatedAtRoute("GetCommentById", new { id = comment.Id, bookId }, commentDTO);
 		}
 	}
 }

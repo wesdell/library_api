@@ -19,8 +19,8 @@ namespace library_api.Controllers
 			this._mapper = mapper;
 		}
 
-		[HttpGet("{id:int}")]
-		public async Task<ActionResult<BookDTOAuthors>> GetById(int id)
+		[HttpGet("{id:int}", Name = "GetBookById")]
+		public async Task<ActionResult<BookDTOAuthors>> Get(int id)
 		{
 			bool bookExists = await this._context.Book.AnyAsync(book => book.Id == id);
 			if (!bookExists)
@@ -58,7 +58,10 @@ namespace library_api.Controllers
 
 			this._context.Add(book);
 			await this._context.SaveChangesAsync();
-			return Ok();
+
+			BookDTO bookDTO = this._mapper.Map<BookDTO>(book);
+
+			return CreatedAtRoute("GetBookById", new { id = book.Id }, bookDTO);
 		}
 	}
 }

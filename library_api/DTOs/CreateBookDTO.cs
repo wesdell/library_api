@@ -5,6 +5,7 @@ namespace library_api.DTOs
 {
 	public class CreateBookDTO
 	{
+		[Required]
 		[StringLength(maximumLength: 250)]
 		[FirstLetterCapitalized]
 		public string Title { get; set; }

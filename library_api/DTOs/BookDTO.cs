@@ -5,7 +5,7 @@ namespace library_api.DTOs
 	public class BookDTO
 	{
 		public int Id { get; set; }
-		[Required]
 		public string Title { get; set; }
+		public DateTime ReleaseDate { get; set; }
 	}
 }

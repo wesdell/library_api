@@ -11,6 +11,7 @@ namespace library_api.Entities
 		[StringLength(maximumLength: 250)]
 		[FirstLetterCapitalized]
 		public string Title { get; set; }
+		public DateTime? ReleaseDate { get; set; }
 		public List<Comment> Comments { get; set; }
 		public List<AuthorBook> AuthorBooks { get; set; }
 	}

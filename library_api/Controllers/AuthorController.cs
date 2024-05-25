@@ -63,22 +63,20 @@ namespace library_api.Controllers
 		}
 
 		[HttpPut("{id:int}")]
-		public async Task<ActionResult> Put(Author author, int id)
+		public async Task<ActionResult> Put(CreateAuthorDTO newAuthor, int id)
 		{
-			if (author.Id != id)
-			{
-				return BadRequest("Author id does not match with any record.");
-			}
-
 			bool authorExists = await this._context.Author.AnyAsync(author => author.Id == id);
 			if (!authorExists)
 			{
 				return NotFound();
 			}
 
+			Author author = this._mapper.Map<Author>(newAuthor);
+			author.Id = id;
+
 			this._context.Update(author);
 			await this._context.SaveChangesAsync();
-			return Ok();
+			return NoContent();
 		}
 
 		[HttpDelete("{id:int}")]

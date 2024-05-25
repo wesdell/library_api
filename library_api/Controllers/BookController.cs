@@ -47,7 +47,31 @@ namespace library_api.Controllers
 			}
 
 			Book book = this._mapper.Map<Book>(createBookDTO);
+			this.SetAuthorsOrder(book);
+			this._context.Add(book);
+			await this._context.SaveChangesAsync();
 
+			BookDTO bookDTO = this._mapper.Map<BookDTO>(book);
+			return CreatedAtRoute("GetBookById", new { id = book.Id }, bookDTO);
+		}
+
+		[HttpPut("{id:int}")]
+		public async Task<ActionResult> Put(CreateBookDTO newBook, int id)
+		{
+			Book bookDB = await this._context.Book.Include(book => book.AuthorBooks).FirstOrDefaultAsync(book => book.Id == id);
+			if (bookDB == null)
+			{
+				return NotFound();
+			}
+
+			bookDB = this._mapper.Map(newBook, bookDB);
+			this.SetAuthorsOrder(bookDB);
+			await this._context.SaveChangesAsync();
+			return NoContent();
+		}
+
+		private void SetAuthorsOrder(Book book)
+		{
 			if (book.AuthorBooks != null)
 			{
 				for (int i = 0; i < book.AuthorBooks.Count; i += 1)
@@ -55,13 +79,6 @@ namespace library_api.Controllers
 					book.AuthorBooks[i].Order = i;
 				}
 			}
-
-			this._context.Add(book);
-			await this._context.SaveChangesAsync();
-
-			BookDTO bookDTO = this._mapper.Map<BookDTO>(book);
-
-			return CreatedAtRoute("GetBookById", new { id = book.Id }, bookDTO);
 		}
 	}
 }

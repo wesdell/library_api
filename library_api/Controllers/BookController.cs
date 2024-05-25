@@ -99,6 +99,20 @@ namespace library_api.Controllers
 			return NoContent();
 		}
 
+		[HttpDelete("{id:int}")]
+		public async Task<ActionResult> Delete(int id)
+		{
+			bool bookExists = await this._context.Book.AnyAsync(book => book.Id == id);
+			if (!bookExists)
+			{
+				return NotFound();
+			}
+
+			this._context.Remove(new Book() { Id = id });
+			await this._context.SaveChangesAsync();
+			return NoContent();
+		}
+
 		private void SetAuthorsOrder(Book book)
 		{
 			if (book.AuthorBooks != null)

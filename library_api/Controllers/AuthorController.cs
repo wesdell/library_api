@@ -90,7 +90,7 @@ namespace library_api.Controllers
 
 			this._context.Remove(new Author() { Id = id });
 			await this._context.SaveChangesAsync();
-			return Ok();
+			return NoContent();
 		}
 	}
 }

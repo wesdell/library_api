@@ -60,5 +60,28 @@ namespace library_api.Controllers
 
 			return CreatedAtRoute("GetCommentById", new { id = comment.Id, bookId }, commentDTO);
 		}
+
+		[HttpPut("{id:int}")]
+		public async Task<ActionResult> Put(CreateCommentDTO newComment, int bookId, int id)
+		{
+			bool bookExists = await this._context.Book.AnyAsync(book => book.Id == bookId);
+			if (!bookExists)
+			{
+				return NotFound();
+			}
+
+			bool commentExists = await this._context.Comment.AnyAsync(comment => comment.Id == id);
+			if (!commentExists)
+			{
+				return NotFound();
+			}
+
+			Comment comment = this._mapper.Map<Comment>(newComment);
+			comment.Id = id;
+			comment.BookId = bookId;
+			this._context.Add(comment);
+			await this._context.SaveChangesAsync();
+			return NoContent();
+		}
 	}
 }

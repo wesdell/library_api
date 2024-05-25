@@ -13,6 +13,7 @@ namespace library_api.Utils
 			CreateMap<Author, AuthorDTOBooks>().ForMember(author => author.Books, options => options.MapFrom(this.MapAuthorDTOBook));
 			CreateMap<CreateBookDTO, Book>().ForMember(book => book.AuthorBooks, options => options.MapFrom(this.MapAuthorBook));
 			CreateMap<Book, BookDTO>();
+			CreateMap<BookPatchDTO, Book>().ReverseMap();
 			CreateMap<Book, BookDTOAuthors>().ForMember(book => book.Authors, options => options.MapFrom(this.MapBookDTOAuthor));
 			CreateMap<CreateCommentDTO, Comment>();
 			CreateMap<Comment, CommentDTO>();

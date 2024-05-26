@@ -1,9 +1,10 @@
 ﻿using library_api.Entities;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace library_api
 {
-	public class ApplicationDBContext : DbContext
+	public class ApplicationDBContext : IdentityDbContext
 	{
 		public ApplicationDBContext(DbContextOptions options) : base(options) { }
 

@@ -1,6 +1,8 @@
 ﻿using AutoMapper;
 using library_api.DTOs;
 using library_api.Entities;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -20,6 +22,7 @@ namespace library_api.Controllers
 		}
 
 		[HttpGet]
+		[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
 		public async Task<ActionResult<List<AuthorDTO>>> Get()
 		{
 			List<Author> authors = await this._context.Author.ToListAsync();

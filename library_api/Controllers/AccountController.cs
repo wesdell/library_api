@@ -37,7 +37,7 @@ namespace library_api.Controllers
 		[HttpPost("signup")]
 		public async Task<ActionResult<AuthenticationResponse>> SignUp(UserCredentials userCredentials)
 		{
-			IdentityUser user = new IdentityUser() { UserName = userCredentials.Name, Email = userCredentials.Email };
+			IdentityUser user = new IdentityUser() { UserName = userCredentials.Email, Email = userCredentials.Email };
 			IdentityResult account = await this._userManager.CreateAsync(user, userCredentials.Password);
 
 			if (!account.Succeeded)
@@ -57,9 +57,9 @@ namespace library_api.Controllers
 			SymmetricSecurityKey key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(this._configuration["JWT_SECRET"]));
 			SigningCredentials credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 			DateTime expires = DateTime.Now.AddMonths(1);
-			JwtSecurityToken securityToken = new JwtSecurityToken(issuer: null, audience: null, claims, expires, signingCredentials: credentials);
+			JwtSecurityToken securityToken = new JwtSecurityToken(issuer: null, audience: null, claims: claims, expires: expires, signingCredentials: credentials);
 
-			return new AuthenticationResponse() { Token = new JwtSecurityTokenHandler().WriteToken(securityToken) };
+			return new AuthenticationResponse() { Token = new JwtSecurityTokenHandler().WriteToken(securityToken), Expires = expires };
 		}
 	}
 }

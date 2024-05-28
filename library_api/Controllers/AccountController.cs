@@ -13,12 +13,25 @@ namespace library_api.Controllers
 	public class AccountController : ControllerBase
 	{
 		private UserManager<IdentityUser> _userManager;
+		private SignInManager<IdentityUser> _signInManager;
 		private IConfiguration _configuration;
 
-		public AccountController(UserManager<IdentityUser> userManager, IConfiguration configuration)
+		public AccountController(UserManager<IdentityUser> userManager, SignInManager<IdentityUser> signInManager, IConfiguration configuration)
 		{
 			this._userManager = userManager;
+			this._signInManager = signInManager;
 			this._configuration = configuration;
+		}
+
+		[HttpPost("login")]
+		public async Task<ActionResult<AuthenticationResponse>> LogIn(UserCredentials userCredentials)
+		{
+			Microsoft.AspNetCore.Identity.SignInResult account = await this._signInManager.PasswordSignInAsync(userCredentials.Email, userCredentials.Password, isPersistent: false, lockoutOnFailure: false);
+			if (!account.Succeeded)
+			{
+				return BadRequest("Incorrect email or password.");
+			}
+			return this.SetUserToken(userCredentials);
 		}
 
 		[HttpPost("signup")]

@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using System.IdentityModel.Tokens.Jwt;
 using System.Text;
 using System.Text.Json.Serialization;
 
@@ -10,8 +11,14 @@ namespace library_api
 {
 	public class Program
 	{
+		public Program()
+		{
+			JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
+		}
+
 		public static void Main(string[] args)
 		{
+			JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
 			var builder = WebApplication.CreateBuilder(args);
 
 			// Add services to the container.

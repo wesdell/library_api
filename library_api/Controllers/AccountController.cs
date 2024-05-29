@@ -51,7 +51,8 @@ namespace library_api.Controllers
 		private AuthenticationResponse SetUserToken(UserCredentials userCredentials)
 		{
 			List<Claim> claims = new List<Claim>() {
-				new Claim("name", userCredentials.Name)
+				new Claim("name", userCredentials.Name),
+				new Claim("email", userCredentials.Email)
 			};
 
 			SymmetricSecurityKey key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(this._configuration["JWT_SECRET"]));

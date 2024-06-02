@@ -27,7 +27,7 @@ namespace library_api.Controllers
 
 		[HttpGet("renewtoken")]
 		[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-		public ActionResult<AuthenticationResponse> RenewToken()
+		public async Task<ActionResult<AuthenticationResponse>> RenewToken()
 		{
 			Claim emailClaim = HttpContext.User.Claims.Where(claim => claim.Type == ClaimTypes.Email).FirstOrDefault();
 			string email = emailClaim.Value;
@@ -37,7 +37,7 @@ namespace library_api.Controllers
 				Email = email
 			};
 
-			return this.SetUserToken(userCredentials);
+			return await this.SetUserToken(userCredentials);
 		}
 
 		[HttpPost("login")]
@@ -48,7 +48,7 @@ namespace library_api.Controllers
 			{
 				return BadRequest("Incorrect email or password.");
 			}
-			return this.SetUserToken(userCredentials);
+			return await this.SetUserToken(userCredentials);
 		}
 
 		[HttpPost("signup")]
@@ -62,14 +62,34 @@ namespace library_api.Controllers
 				return BadRequest(account.Errors);
 			}
 
-			return this.SetUserToken(userCredentials);
+			return await this.SetUserToken(userCredentials);
 		}
 
-		private AuthenticationResponse SetUserToken(UserCredentials userCredentials)
+		[HttpPost("setadmin")]
+		public async Task<ActionResult> SetAdmin(UpdateAdminDTO updateAdminDTO)
+		{
+			IdentityUser user = await this._userManager.FindByEmailAsync(updateAdminDTO.Email);
+			await this._userManager.AddClaimAsync(user, new Claim("Admin", "1"));
+			return NoContent();
+		}
+
+		[HttpPost("removeadmin")]
+		public async Task<ActionResult> RemoveAdmin(UpdateAdminDTO updateAdminDTO)
+		{
+			IdentityUser user = await this._userManager.FindByEmailAsync(updateAdminDTO.Email);
+			await this._userManager.RemoveClaimAsync(user, new Claim("Admin", "1"));
+			return NoContent();
+		}
+
+		private async Task<AuthenticationResponse> SetUserToken(UserCredentials userCredentials)
 		{
 			List<Claim> claims = new List<Claim>() {
 				new Claim(ClaimTypes.Email, userCredentials.Email)
 			};
+
+			IdentityUser user = await this._userManager.FindByEmailAsync(userCredentials.Email);
+			IList<Claim> userDBClaims = await this._userManager.GetClaimsAsync(user);
+			claims.AddRange(userDBClaims);
 
 			SymmetricSecurityKey key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(this._configuration["JWT_SECRET"]));
 			SigningCredentials credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);

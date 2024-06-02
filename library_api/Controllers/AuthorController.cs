@@ -38,7 +38,9 @@ namespace library_api.Controllers
 			{
 				return NotFound();
 			}
-			return this._mapper.Map<AuthorDTOBooks>(author);
+			AuthorDTOBooks authorDTOBooks = this._mapper.Map<AuthorDTOBooks>(author);
+			this.SetHATEOASLinks(authorDTOBooks);
+			return authorDTOBooks;
 		}
 
 		[HttpGet("{name}", Name = "GetAuthorByName")]
@@ -95,6 +97,19 @@ namespace library_api.Controllers
 			this._context.Remove(new Author() { Id = id });
 			await this._context.SaveChangesAsync();
 			return NoContent();
+		}
+
+		private void SetHATEOASLinks(AuthorDTO authorDTO)
+		{
+			authorDTO.Links.Add(
+				new HATEOASData(link: Url.Link("GetAuthorById", new { id = authorDTO.Id }), description: "self", method: "GET")
+			);
+			authorDTO.Links.Add(
+				new HATEOASData(link: Url.Link("UpdateAuthorById", new { id = authorDTO.Id }), description: "author-update", method: "PUT")
+			);
+			authorDTO.Links.Add(
+				new HATEOASData(link: Url.Link("DeleteAuthorById", new { id = authorDTO.Id }), description: "author-delete", method: "DELETE")
+			);
 		}
 	}
 }

@@ -26,17 +26,23 @@ namespace library_api.Controllers
 
 		[HttpGet(Name = "GetAuthors")]
 		[AllowAnonymous]
-		public async Task<ActionResult<List<AuthorDTO>>> Get()
+		public async Task<ActionResult<List<AuthorDTO>>> Get([FromQuery] bool includeHATEOAS)
 		{
-			AuthorizationResult authorizationResult = await this._authorizationService.AuthorizeAsync(User, "Admin");
 			List<Author> authors = await this._context.Author.ToListAsync();
 			List<AuthorDTO> authorsDTO = this._mapper.Map<List<AuthorDTO>>(authors);
-			authorsDTO.ForEach(author => this.SetHATEOASLinks(author, authorizationResult.Succeeded));
+
+			if (includeHATEOAS)
+			{
+				AuthorizationResult authorizationResult = await this._authorizationService.AuthorizeAsync(User, "Admin");
+				authorsDTO.ForEach(author => this.SetHATEOASLinks(author, authorizationResult.Succeeded));
+			}
+
 			return authorsDTO;
 		}
 
 		[HttpGet("{id:int}", Name = "GetAuthorById")]
-		public async Task<ActionResult<AuthorDTOBooks>> Get(int id)
+		[AllowAnonymous]
+		public async Task<ActionResult<AuthorDTOBooks>> Get(int id, [FromQuery] bool includeHATEOAS)
 		{
 			Author author = await this._context.Author.Include(author => author.AuthorBooks).ThenInclude(authorbook => authorbook.Book).FirstOrDefaultAsync(au => au.Id == id);
 			if (author == null)
@@ -44,14 +50,19 @@ namespace library_api.Controllers
 				return NotFound();
 			}
 
-			AuthorizationResult authorizationResult = await this._authorizationService.AuthorizeAsync(User, "Admin");
-
 			AuthorDTOBooks authorDTOBooks = this._mapper.Map<AuthorDTOBooks>(author);
-			this.SetHATEOASLinks(authorDTOBooks, authorizationResult.Succeeded);
+
+			if (includeHATEOAS)
+			{
+				AuthorizationResult authorizationResult = await this._authorizationService.AuthorizeAsync(User, "Admin");
+				this.SetHATEOASLinks(authorDTOBooks, authorizationResult.Succeeded);
+			}
+
 			return authorDTOBooks;
 		}
 
 		[HttpGet("{name}", Name = "GetAuthorByName")]
+		[AllowAnonymous]
 		public async Task<ActionResult<List<AuthorDTO>>> Get([FromRoute] string name)
 		{
 			List<Author> authors = await this._context.Author.Where(au => au.Name.Contains(name)).ToListAsync();

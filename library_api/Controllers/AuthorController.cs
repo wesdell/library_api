@@ -15,19 +15,24 @@ namespace library_api.Controllers
 	{
 		private readonly ApplicationDBContext _context;
 		private readonly IMapper _mapper;
+		private readonly IAuthorizationService _authorizationService;
 
-		public AuthorController(ApplicationDBContext context, IMapper mapper)
+		public AuthorController(ApplicationDBContext context, IMapper mapper, IAuthorizationService authorizationService)
 		{
 			this._context = context;
 			this._mapper = mapper;
+			this._authorizationService = authorizationService;
 		}
 
 		[HttpGet(Name = "GetAuthors")]
 		[AllowAnonymous]
 		public async Task<ActionResult<List<AuthorDTO>>> Get()
 		{
+			AuthorizationResult authorizationResult = await this._authorizationService.AuthorizeAsync(User, "Admin");
 			List<Author> authors = await this._context.Author.ToListAsync();
-			return this._mapper.Map<List<AuthorDTO>>(authors);
+			List<AuthorDTO> authorsDTO = this._mapper.Map<List<AuthorDTO>>(authors);
+			authorsDTO.ForEach(author => this.SetHATEOASLinks(author, authorizationResult.Succeeded));
+			return authorsDTO;
 		}
 
 		[HttpGet("{id:int}", Name = "GetAuthorById")]
@@ -38,8 +43,11 @@ namespace library_api.Controllers
 			{
 				return NotFound();
 			}
+
+			AuthorizationResult authorizationResult = await this._authorizationService.AuthorizeAsync(User, "Admin");
+
 			AuthorDTOBooks authorDTOBooks = this._mapper.Map<AuthorDTOBooks>(author);
-			this.SetHATEOASLinks(authorDTOBooks);
+			this.SetHATEOASLinks(authorDTOBooks, authorizationResult.Succeeded);
 			return authorDTOBooks;
 		}
 
@@ -99,17 +107,21 @@ namespace library_api.Controllers
 			return NoContent();
 		}
 
-		private void SetHATEOASLinks(AuthorDTO authorDTO)
+		private void SetHATEOASLinks(AuthorDTO authorDTO, bool isAdmin)
 		{
 			authorDTO.Links.Add(
 				new HATEOASData(link: Url.Link("GetAuthorById", new { id = authorDTO.Id }), description: "self", method: "GET")
 			);
-			authorDTO.Links.Add(
-				new HATEOASData(link: Url.Link("UpdateAuthorById", new { id = authorDTO.Id }), description: "author-update", method: "PUT")
-			);
-			authorDTO.Links.Add(
-				new HATEOASData(link: Url.Link("DeleteAuthorById", new { id = authorDTO.Id }), description: "author-delete", method: "DELETE")
-			);
+
+			if (isAdmin)
+			{
+				authorDTO.Links.Add(
+					new HATEOASData(link: Url.Link("UpdateAuthorById", new { id = authorDTO.Id }), description: "author-update", method: "PUT")
+				);
+				authorDTO.Links.Add(
+					new HATEOASData(link: Url.Link("DeleteAuthorById", new { id = authorDTO.Id }), description: "author-delete", method: "DELETE")
+				);
+			}
 		}
 	}
 }

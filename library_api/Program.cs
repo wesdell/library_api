@@ -70,6 +70,8 @@ namespace library_api
 			builder.Services.AddAutoMapper(typeof(Program));
 			builder.Services.AddIdentity<IdentityUser, IdentityRole>().AddEntityFrameworkStores<ApplicationDBContext>().AddDefaultTokenProviders();
 
+			builder.Services.AddAuthorization(options => options.AddPolicy("Admin", policy => policy.RequireClaim("Admin")));
+
 			var app = builder.Build();
 
 			// Configure the HTTP request pipeline.

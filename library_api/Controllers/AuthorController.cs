@@ -22,7 +22,7 @@ namespace library_api.Controllers
 			this._mapper = mapper;
 		}
 
-		[HttpGet]
+		[HttpGet(Name = "GetAuthors")]
 		[AllowAnonymous]
 		public async Task<ActionResult<List<AuthorDTO>>> Get()
 		{
@@ -41,14 +41,14 @@ namespace library_api.Controllers
 			return this._mapper.Map<AuthorDTOBooks>(author);
 		}
 
-		[HttpGet("{name}")]
+		[HttpGet("{name}", Name = "GetAuthorByName")]
 		public async Task<ActionResult<List<AuthorDTO>>> Get([FromRoute] string name)
 		{
 			List<Author> authors = await this._context.Author.Where(au => au.Name.Contains(name)).ToListAsync();
 			return this._mapper.Map<List<AuthorDTO>>(authors);
 		}
 
-		[HttpPost]
+		[HttpPost(Name = "CreateAuthor")]
 		public async Task<ActionResult> Post([FromBody] CreateAuthorDTO createAuthorDTO)
 		{
 			bool authorAlreadyExists = await this._context.Author.AnyAsync(author => author.Name == createAuthorDTO.Name);
@@ -66,7 +66,7 @@ namespace library_api.Controllers
 			return CreatedAtRoute("GetAuthorById", new { id = author.Id }, authorDTO);
 		}
 
-		[HttpPut("{id:int}")]
+		[HttpPut("{id:int}", Name = "UpdateAuthorById")]
 		public async Task<ActionResult> Put(CreateAuthorDTO newAuthor, int id)
 		{
 			bool authorExists = await this._context.Author.AnyAsync(author => author.Id == id);
@@ -83,7 +83,7 @@ namespace library_api.Controllers
 			return NoContent();
 		}
 
-		[HttpDelete("{id:int}")]
+		[HttpDelete("{id:int}", Name = "DeleteAuthorById")]
 		public async Task<ActionResult> Delete(int id)
 		{
 			bool authorExists = await this._context.Author.AnyAsync(author => author.Id == id);

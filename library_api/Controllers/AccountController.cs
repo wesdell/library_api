@@ -1,4 +1,6 @@
 ﻿using library_api.DTOs;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
@@ -21,6 +23,21 @@ namespace library_api.Controllers
 			this._userManager = userManager;
 			this._signInManager = signInManager;
 			this._configuration = configuration;
+		}
+
+		[HttpGet("renewtoken")]
+		[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+		public ActionResult<AuthenticationResponse> RenewToken()
+		{
+			Claim emailClaim = HttpContext.User.Claims.Where(claim => claim.Type == ClaimTypes.Email).FirstOrDefault();
+			string email = emailClaim.Value;
+
+			UserCredentials userCredentials = new UserCredentials()
+			{
+				Email = email
+			};
+
+			return this.SetUserToken(userCredentials);
 		}
 
 		[HttpPost("login")]
@@ -51,8 +68,7 @@ namespace library_api.Controllers
 		private AuthenticationResponse SetUserToken(UserCredentials userCredentials)
 		{
 			List<Claim> claims = new List<Claim>() {
-				new Claim("name", userCredentials.Name),
-				new Claim("email", userCredentials.Email)
+				new Claim(ClaimTypes.Email, userCredentials.Email)
 			};
 
 			SymmetricSecurityKey key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(this._configuration["JWT_SECRET"]));

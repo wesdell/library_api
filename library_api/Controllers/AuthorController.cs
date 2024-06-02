@@ -10,7 +10,7 @@ namespace library_api.Controllers
 {
 	[ApiController]
 	[Route("api/author")]
-	[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+	[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Policy = "Admin")]
 	public class AuthorController : ControllerBase
 	{
 		private readonly ApplicationDBContext _context;

@@ -1,6 +1,8 @@
 ﻿using AutoMapper;
 using library_api.DTOs;
 using library_api.Entities;
+using library_api.Services;
+using library_api.Utils;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -15,34 +17,27 @@ namespace library_api.Controllers
 	{
 		private readonly ApplicationDBContext _context;
 		private readonly IMapper _mapper;
-		private readonly IAuthorizationService _authorizationService;
 
-		public AuthorController(ApplicationDBContext context, IMapper mapper, IAuthorizationService authorizationService)
+		public AuthorController(ApplicationDBContext context, IMapper mapper)
 		{
 			this._context = context;
 			this._mapper = mapper;
-			this._authorizationService = authorizationService;
 		}
 
 		[HttpGet(Name = "GetAuthors")]
 		[AllowAnonymous]
-		public async Task<ActionResult<List<AuthorDTO>>> Get([FromQuery] bool includeHATEOAS)
+		[ServiceFilter(typeof(HATEOASAuthorFilterAttribute))]
+		public async Task<ActionResult<List<AuthorDTO>>> Get([FromHeader] string includeHATEOAS)
 		{
 			List<Author> authors = await this._context.Author.ToListAsync();
 			List<AuthorDTO> authorsDTO = this._mapper.Map<List<AuthorDTO>>(authors);
-
-			if (includeHATEOAS)
-			{
-				AuthorizationResult authorizationResult = await this._authorizationService.AuthorizeAsync(User, "Admin");
-				authorsDTO.ForEach(author => this.SetHATEOASLinks(author, authorizationResult.Succeeded));
-			}
-
 			return authorsDTO;
 		}
 
 		[HttpGet("{id:int}", Name = "GetAuthorById")]
 		[AllowAnonymous]
-		public async Task<ActionResult<AuthorDTOBooks>> Get(int id, [FromQuery] bool includeHATEOAS)
+		[ServiceFilter(typeof(HATEOASAuthorFilterAttribute))]
+		public async Task<ActionResult<AuthorDTOBooks>> GetById(int id, [FromHeader] string includeHATEOAS)
 		{
 			Author author = await this._context.Author.Include(author => author.AuthorBooks).ThenInclude(authorbook => authorbook.Book).FirstOrDefaultAsync(au => au.Id == id);
 			if (author == null)
@@ -51,19 +46,12 @@ namespace library_api.Controllers
 			}
 
 			AuthorDTOBooks authorDTOBooks = this._mapper.Map<AuthorDTOBooks>(author);
-
-			if (includeHATEOAS)
-			{
-				AuthorizationResult authorizationResult = await this._authorizationService.AuthorizeAsync(User, "Admin");
-				this.SetHATEOASLinks(authorDTOBooks, authorizationResult.Succeeded);
-			}
-
 			return authorDTOBooks;
 		}
 
 		[HttpGet("{name}", Name = "GetAuthorByName")]
 		[AllowAnonymous]
-		public async Task<ActionResult<List<AuthorDTO>>> Get([FromRoute] string name)
+		public async Task<ActionResult<List<AuthorDTO>>> GetByName([FromRoute] string name)
 		{
 			List<Author> authors = await this._context.Author.Where(au => au.Name.Contains(name)).ToListAsync();
 			return this._mapper.Map<List<AuthorDTO>>(authors);
@@ -116,23 +104,6 @@ namespace library_api.Controllers
 			this._context.Remove(new Author() { Id = id });
 			await this._context.SaveChangesAsync();
 			return NoContent();
-		}
-
-		private void SetHATEOASLinks(AuthorDTO authorDTO, bool isAdmin)
-		{
-			authorDTO.Links.Add(
-				new HATEOASData(link: Url.Link("GetAuthorById", new { id = authorDTO.Id }), description: "self", method: "GET")
-			);
-
-			if (isAdmin)
-			{
-				authorDTO.Links.Add(
-					new HATEOASData(link: Url.Link("UpdateAuthorById", new { id = authorDTO.Id }), description: "author-update", method: "PUT")
-				);
-				authorDTO.Links.Add(
-					new HATEOASData(link: Url.Link("DeleteAuthorById", new { id = authorDTO.Id }), description: "author-delete", method: "DELETE")
-				);
-			}
 		}
 	}
 }

@@ -1,5 +1,8 @@
+using library_api.Services;
+using library_api.Utils;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
@@ -71,6 +74,11 @@ namespace library_api
 			builder.Services.AddIdentity<IdentityUser, IdentityRole>().AddEntityFrameworkStores<ApplicationDBContext>().AddDefaultTokenProviders();
 
 			builder.Services.AddAuthorization(options => options.AddPolicy("Admin", policy => policy.RequireClaim("Admin")));
+
+			builder.Services.AddHttpContextAccessor();
+			builder.Services.AddTransient<SetHATEOASLinks>();
+			builder.Services.AddTransient<HATEOASAuthorFilterAttribute>();
+			builder.Services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
 
 			var app = builder.Build();
 

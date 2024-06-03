@@ -27,7 +27,7 @@ namespace library_api.Controllers
 		[HttpGet(Name = "GetAuthors")]
 		[AllowAnonymous]
 		[ServiceFilter(typeof(HATEOASAuthorFilterAttribute))]
-		public async Task<ActionResult<List<AuthorDTO>>> Get([FromHeader] string includeHATEOAS)
+		public async Task<ActionResult<List<AuthorDTO>>> Get()
 		{
 			List<Author> authors = await this._context.Author.ToListAsync();
 			List<AuthorDTO> authorsDTO = this._mapper.Map<List<AuthorDTO>>(authors);
@@ -37,7 +37,7 @@ namespace library_api.Controllers
 		[HttpGet("{id:int}", Name = "GetAuthorById")]
 		[AllowAnonymous]
 		[ServiceFilter(typeof(HATEOASAuthorFilterAttribute))]
-		public async Task<ActionResult<AuthorDTOBooks>> GetById(int id, [FromHeader] string includeHATEOAS)
+		public async Task<ActionResult<AuthorDTOBooks>> GetById(int id)
 		{
 			Author author = await this._context.Author.Include(author => author.AuthorBooks).ThenInclude(authorbook => authorbook.Book).FirstOrDefaultAsync(au => au.Id == id);
 			if (author == null)

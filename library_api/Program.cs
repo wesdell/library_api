@@ -53,6 +53,8 @@ namespace library_api
 					In = ParameterLocation.Header
 				});
 
+				options.OperationFilter<HATEOASParameter>();
+
 				options.AddSecurityRequirement(new OpenApiSecurityRequirement
 				{
 					{
@@ -75,7 +77,6 @@ namespace library_api
 
 			builder.Services.AddAuthorization(options => options.AddPolicy("Admin", policy => policy.RequireClaim("Admin")));
 
-			builder.Services.AddHttpContextAccessor();
 			builder.Services.AddTransient<SetHATEOASLinks>();
 			builder.Services.AddTransient<HATEOASAuthorFilterAttribute>();
 			builder.Services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();

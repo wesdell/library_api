@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using library_api.DTOs;
 using library_api.Entities;
+using library_api.Utils;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -38,14 +39,15 @@ namespace library_api.Controllers.V1
 		}
 
 		[HttpGet(Name = "GetCommentsByBookIdV1")]
-		public async Task<ActionResult<List<CommentDTO>>> Get(int bookId)
+		public async Task<ActionResult<List<CommentDTO>>> Get([FromQuery] PaginationDTO paginationDTO, int bookId)
 		{
 			bool bookExists = await this._context.Book.AnyAsync(book => book.Id == bookId);
 			if (!bookExists)
 			{
 				return NotFound();
 			}
-			List<Comment> comments = await this._context.Comment.Where(comment => comment.BookId == bookId).ToListAsync();
+			IQueryable<Comment> queryable = this._context.Comment.Where(comment => comment.BookId == bookId).AsQueryable();
+			List<Comment> comments = await queryable.OrderBy(comment => comment.Id).Paginate(paginationDTO).ToListAsync();
 			return this._mapper.Map<List<CommentDTO>>(comments);
 		}
 

@@ -26,9 +26,11 @@ namespace library_api.Controllers.V1
 		[HttpGet(Name = "GetAuthorsV1")]
 		[AllowAnonymous]
 		[ServiceFilter(typeof(HATEOASAuthorFilterAttribute))]
-		public async Task<ActionResult<List<AuthorDTO>>> Get()
+		public async Task<ActionResult<List<AuthorDTO>>> Get([FromQuery] PaginationDTO paginationDTO)
 		{
-			List<Author> authors = await this._context.Author.ToListAsync();
+			IQueryable<Author> queryable = this._context.Author.AsQueryable();
+			await HttpContext.InsertPaginationParametersInHeader(queryable);
+			List<Author> authors = await queryable.OrderBy(author => author.Name).Paginate(paginationDTO).ToListAsync();
 			List<AuthorDTO> authorsDTO = this._mapper.Map<List<AuthorDTO>>(authors);
 			return authorsDTO;
 		}

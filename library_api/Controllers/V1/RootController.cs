@@ -3,10 +3,10 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace library_api.Controllers
+namespace library_api.Controllers.V1
 {
 	[ApiController]
-	[Route("api")]
+	[Route("api/v1")]
 	[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
 	public class RootController : ControllerBase
 	{
@@ -17,7 +17,7 @@ namespace library_api.Controllers
 			this._authorizationService = authorizationService;
 		}
 
-		[HttpGet(Name = "GetRoot")]
+		[HttpGet(Name = "GetRootV1")]
 		[AllowAnonymous]
 		public async Task<ActionResult<IEnumerable<HATEOASData>>> Get()
 		{

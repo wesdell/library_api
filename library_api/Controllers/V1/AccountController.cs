@@ -8,10 +8,10 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 
-namespace library_api.Controllers
+namespace library_api.Controllers.V1
 {
 	[ApiController]
-	[Route("api/account")]
+	[Route("api/v1/account")]
 	public class AccountController : ControllerBase
 	{
 		private UserManager<IdentityUser> _userManager;
@@ -25,7 +25,7 @@ namespace library_api.Controllers
 			this._configuration = configuration;
 		}
 
-		[HttpGet("renewtoken")]
+		[HttpGet("renewtoken", Name = "renewtokenV1")]
 		[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
 		public async Task<ActionResult<AuthenticationResponse>> RenewToken()
 		{
@@ -40,7 +40,7 @@ namespace library_api.Controllers
 			return await this.SetUserToken(userCredentials);
 		}
 
-		[HttpPost("login")]
+		[HttpPost("login", Name = "loginV1")]
 		public async Task<ActionResult<AuthenticationResponse>> LogIn(UserCredentials userCredentials)
 		{
 			Microsoft.AspNetCore.Identity.SignInResult account = await this._signInManager.PasswordSignInAsync(userCredentials.Email, userCredentials.Password, isPersistent: false, lockoutOnFailure: false);
@@ -51,7 +51,7 @@ namespace library_api.Controllers
 			return await this.SetUserToken(userCredentials);
 		}
 
-		[HttpPost("signup")]
+		[HttpPost("signup", Name = "signupV1")]
 		public async Task<ActionResult<AuthenticationResponse>> SignUp(UserCredentials userCredentials)
 		{
 			IdentityUser user = new IdentityUser() { UserName = userCredentials.Email, Email = userCredentials.Email };
@@ -65,7 +65,7 @@ namespace library_api.Controllers
 			return await this.SetUserToken(userCredentials);
 		}
 
-		[HttpPost("setadmin")]
+		[HttpPost("setadmin", Name = "setadminV1")]
 		public async Task<ActionResult> SetAdmin(UpdateAdminDTO updateAdminDTO)
 		{
 			IdentityUser user = await this._userManager.FindByEmailAsync(updateAdminDTO.Email);
@@ -73,7 +73,7 @@ namespace library_api.Controllers
 			return NoContent();
 		}
 
-		[HttpPost("removeadmin")]
+		[HttpPost("removeadmin", Name = "removeadminV1")]
 		public async Task<ActionResult> RemoveAdmin(UpdateAdminDTO updateAdminDTO)
 		{
 			IdentityUser user = await this._userManager.FindByEmailAsync(updateAdminDTO.Email);

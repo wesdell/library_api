@@ -1,17 +1,16 @@
 ﻿using AutoMapper;
 using library_api.DTOs;
 using library_api.Entities;
-using library_api.Services;
 using library_api.Utils;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
-namespace library_api.Controllers
+namespace library_api.Controllers.V1
 {
 	[ApiController]
-	[Route("api/author")]
+	[Route("api/v1/author")]
 	[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Policy = "Admin")]
 	public class AuthorController : ControllerBase
 	{
@@ -24,7 +23,7 @@ namespace library_api.Controllers
 			this._mapper = mapper;
 		}
 
-		[HttpGet(Name = "GetAuthors")]
+		[HttpGet(Name = "GetAuthorsV1")]
 		[AllowAnonymous]
 		[ServiceFilter(typeof(HATEOASAuthorFilterAttribute))]
 		public async Task<ActionResult<List<AuthorDTO>>> Get()
@@ -34,7 +33,7 @@ namespace library_api.Controllers
 			return authorsDTO;
 		}
 
-		[HttpGet("{id:int}", Name = "GetAuthorById")]
+		[HttpGet("{id:int}", Name = "GetAuthorByIdV1")]
 		[AllowAnonymous]
 		[ServiceFilter(typeof(HATEOASAuthorFilterAttribute))]
 		public async Task<ActionResult<AuthorDTOBooks>> GetById(int id)
@@ -49,7 +48,7 @@ namespace library_api.Controllers
 			return authorDTOBooks;
 		}
 
-		[HttpGet("{name}", Name = "GetAuthorByName")]
+		[HttpGet("{name}", Name = "GetAuthorByNameV1")]
 		[AllowAnonymous]
 		public async Task<ActionResult<List<AuthorDTO>>> GetByName([FromRoute] string name)
 		{
@@ -57,7 +56,7 @@ namespace library_api.Controllers
 			return this._mapper.Map<List<AuthorDTO>>(authors);
 		}
 
-		[HttpPost(Name = "CreateAuthor")]
+		[HttpPost(Name = "CreateAuthorV1")]
 		public async Task<ActionResult> Post([FromBody] CreateAuthorDTO createAuthorDTO)
 		{
 			bool authorAlreadyExists = await this._context.Author.AnyAsync(author => author.Name == createAuthorDTO.Name);
@@ -72,10 +71,10 @@ namespace library_api.Controllers
 
 			AuthorDTO authorDTO = this._mapper.Map<AuthorDTO>(author);
 
-			return CreatedAtRoute("GetAuthorById", new { id = author.Id }, authorDTO);
+			return CreatedAtRoute("GetAuthorByIdV1", new { id = author.Id }, authorDTO);
 		}
 
-		[HttpPut("{id:int}", Name = "UpdateAuthorById")]
+		[HttpPut("{id:int}", Name = "UpdateAuthorByIdV1")]
 		public async Task<ActionResult> Put(CreateAuthorDTO newAuthor, int id)
 		{
 			bool authorExists = await this._context.Author.AnyAsync(author => author.Id == id);
@@ -92,7 +91,7 @@ namespace library_api.Controllers
 			return NoContent();
 		}
 
-		[HttpDelete("{id:int}", Name = "DeleteAuthorById")]
+		[HttpDelete("{id:int}", Name = "DeleteAuthorByIdV1")]
 		public async Task<ActionResult> Delete(int id)
 		{
 			bool authorExists = await this._context.Author.AnyAsync(author => author.Id == id);

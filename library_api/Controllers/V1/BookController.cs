@@ -5,10 +5,10 @@ using library_api.Entities;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
-namespace library_api.Controllers
+namespace library_api.Controllers.V1
 {
 	[ApiController]
-	[Route("api/book")]
+	[Route("api/v1/book")]
 	public class BookController : ControllerBase
 	{
 		private readonly ApplicationDBContext _context;
@@ -20,7 +20,7 @@ namespace library_api.Controllers
 			this._mapper = mapper;
 		}
 
-		[HttpGet("{id:int}", Name = "GetBookById")]
+		[HttpGet("{id:int}", Name = "GetBookByIdV1")]
 		public async Task<ActionResult<BookDTOAuthors>> Get(int id)
 		{
 			bool bookExists = await this._context.Book.AnyAsync(book => book.Id == id);
@@ -33,7 +33,7 @@ namespace library_api.Controllers
 			return this._mapper.Map<BookDTOAuthors>(book);
 		}
 
-		[HttpPost]
+		[HttpPost(Name = "CreateBookV1")]
 		public async Task<ActionResult> Post([FromBody] CreateBookDTO createBookDTO)
 		{
 			if (createBookDTO.AuthorsIds == null)
@@ -56,7 +56,7 @@ namespace library_api.Controllers
 			return CreatedAtRoute("GetBookById", new { id = book.Id }, bookDTO);
 		}
 
-		[HttpPut("{id:int}")]
+		[HttpPut("{id:int}", Name = "UpdateBookByIdV1")]
 		public async Task<ActionResult> Put(CreateBookDTO newBook, int id)
 		{
 			Book bookDB = await this._context.Book.Include(book => book.AuthorBooks).FirstOrDefaultAsync(book => book.Id == id);
@@ -71,7 +71,7 @@ namespace library_api.Controllers
 			return NoContent();
 		}
 
-		[HttpPatch("{id:int}")]
+		[HttpPatch("{id:int}", Name = "PartialUpdateBookByIdV1")]
 		public async Task<ActionResult> Patch(int id, JsonPatchDocument<BookPatchDTO> patchDocument)
 		{
 			if (patchDocument == null)
@@ -99,7 +99,7 @@ namespace library_api.Controllers
 			return NoContent();
 		}
 
-		[HttpDelete("{id:int}")]
+		[HttpDelete("{id:int}", Name = "DeleteBookByIdV1")]
 		public async Task<ActionResult> Delete(int id)
 		{
 			bool bookExists = await this._context.Book.AnyAsync(book => book.Id == id);

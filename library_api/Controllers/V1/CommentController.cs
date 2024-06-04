@@ -8,10 +8,10 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 
-namespace library_api.Controllers
+namespace library_api.Controllers.V1
 {
 	[ApiController]
-	[Route("api/book/{bookId:int}/comment")]
+	[Route("api/v1/book/{bookId:int}/comment")]
 	public class CommentController : ControllerBase
 	{
 		private readonly ApplicationDBContext _context;
@@ -25,7 +25,7 @@ namespace library_api.Controllers
 			this._userManager = userManager;
 		}
 
-		[HttpGet("{id:int}", Name = "GetCommentById")]
+		[HttpGet("{id:int}", Name = "GetCommentByIdV1")]
 		public async Task<ActionResult<CommentDTO>> GetById(int id)
 		{
 			bool commentExists = await this._context.Comment.AnyAsync(comment => comment.Id == id);
@@ -37,7 +37,7 @@ namespace library_api.Controllers
 			return this._mapper.Map<CommentDTO>(comment);
 		}
 
-		[HttpGet]
+		[HttpGet(Name = "GetCommentsByBookIdV1")]
 		public async Task<ActionResult<List<CommentDTO>>> Get(int bookId)
 		{
 			bool bookExists = await this._context.Book.AnyAsync(book => book.Id == bookId);
@@ -49,7 +49,7 @@ namespace library_api.Controllers
 			return this._mapper.Map<List<CommentDTO>>(comments);
 		}
 
-		[HttpPost]
+		[HttpPost(Name = "CreateCommentByBookIdV1")]
 		[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
 		public async Task<ActionResult> Post(int bookId, [FromBody] CreateCommentDTO createCommentDTO)
 		{
@@ -75,7 +75,7 @@ namespace library_api.Controllers
 			return CreatedAtRoute("GetCommentById", new { id = comment.Id, bookId }, commentDTO);
 		}
 
-		[HttpPut("{id:int}")]
+		[HttpPut("{id:int}", Name = "UpdateCommentByBookIdV1")]
 		public async Task<ActionResult> Put(CreateCommentDTO newComment, int bookId, int id)
 		{
 			bool bookExists = await this._context.Book.AnyAsync(book => book.Id == bookId);

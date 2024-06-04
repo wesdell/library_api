@@ -26,7 +26,9 @@ namespace library_api
 
 			// Add services to the container.
 
-			builder.Services.AddControllers().AddJsonOptions(el => el.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles).AddNewtonsoftJson();
+			builder.Services
+				.AddControllers(options => options.Conventions.Add(new SwaggerVersionControl()))
+				.AddJsonOptions(options => options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles).AddNewtonsoftJson();
 			// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 			builder.Services.AddEndpointsApiExplorer();
 
@@ -44,6 +46,8 @@ namespace library_api
 
 			builder.Services.AddSwaggerGen(options =>
 			{
+				options.SwaggerDoc("v1", new OpenApiInfo { Title = "library_api", Version = "v1" });
+
 				options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
 				{
 					Name = "Authorization",
@@ -87,7 +91,10 @@ namespace library_api
 			if (app.Environment.IsDevelopment())
 			{
 				app.UseSwagger();
-				app.UseSwaggerUI();
+				app.UseSwaggerUI(options =>
+				{
+					options.SwaggerEndpoint("v1/swagger.json", "library_api v1");
+				});
 			}
 
 			app.UseHttpsRedirection();

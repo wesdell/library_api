@@ -7,7 +7,7 @@ namespace library_api.DTOs
 	{
 		[Required]
 		[StringLength(maximumLength: 250)]
-		[FirstLetterCapitalized]
+		[FirstLetterUppercaseAttribute]
 		public string Title { get; set; }
 		public DateTime ReleaseDate { get; set; }
 	}

@@ -2,11 +2,11 @@
 
 namespace library_api.Validations
 {
-	public class FirstLetterCapitalized : ValidationAttribute
+	public class FirstLetterUppercaseAttribute : ValidationAttribute
 	{
 		protected override ValidationResult IsValid(object value, ValidationContext validationContext)
 		{
-			if (string.IsNullOrEmpty(value.ToString()) || value == null)
+			if (value == null || string.IsNullOrEmpty(value.ToString()))
 			{
 				return ValidationResult.Success;
 			}

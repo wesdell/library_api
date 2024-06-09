@@ -7,7 +7,7 @@ namespace library_api.DTOs
 	{
 		[Required]
 		[StringLength(maximumLength: 150)]
-		[FirstLetterCapitalized]
+		[FirstLetterUppercaseAttribute]
 		public string Name { get; set; }
 	}
 }

@@ -9,7 +9,7 @@ namespace library_api.Entities
 		public int Id { get; set; }
 		[Required]
 		[StringLength(maximumLength: 150)]
-		[FirstLetterCapitalized]
+		[FirstLetterUppercaseAttribute]
 		public string Name { get; set; }
 		public List<AuthorBook> AuthorBooks { get; set; }
 	}

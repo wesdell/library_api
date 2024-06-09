@@ -9,7 +9,7 @@ namespace library_api.Entities
 		public int Id { get; set; }
 		[Required]
 		[StringLength(maximumLength: 250)]
-		[FirstLetterCapitalized]
+		[FirstLetterUppercaseAttribute]
 		public string Title { get; set; }
 		public DateTime? ReleaseDate { get; set; }
 		public List<Comment> Comments { get; set; }

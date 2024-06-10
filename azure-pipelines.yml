@@ -3,16 +3,23 @@
 # Add steps that run tests, create a NuGet package, deploy, and more:
 # https://docs.microsoft.com/azure/devops/pipelines/languages/dotnet-core
 
-pool:  
-  name: local
+trigger:
+- main
 
-trigger: none
+pool:
+  vmImage: 'vs2017-win2016'
 
 variables:
   buildConfiguration: 'Release'
   proyecto: 'library_api/library_api.csproj'
 
 steps:
+- task: UseDotNet@2
+  displayName: 'Instalando Preview ASP.NET Core 6'
+  inputs:
+    packageType: 'sdk'
+    version: '6.0.100-preview.4.21255.9'
+    includePreviewVersions: true
 - script: dotnet build --configuration $(buildConfiguration)
   displayName: 'dotnet build $(buildConfiguration)'
 - task: CmdLine@2
